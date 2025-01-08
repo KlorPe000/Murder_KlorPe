@@ -1,14 +1,3 @@
--- Load the Orion Library
-local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/KlorPe000/KlorPeLib/main/source'))()
-
--- Create the main window if it hasn't been created yet
-local Window = OrionLib:MakeWindow({
-    Name = "KlorPeHub", 
-    HidePremium = false, 
-    SaveConfig = true, 
-    ConfigFolder = "KlorPeTest"
-})
-
 local MurderTab = Window:MakeTab({ 
     Name = "Murder Mystery", 
     Icon = "rbxassetid://17404114716",
