@@ -1,3 +1,7 @@
+return function(context)
+    local OrionLib = context.OrionLib
+    local Window = context.Window
+
 local MurderTab = Window:MakeTab({ 
     Name = "Murder Mystery", 
     Icon = "rbxassetid://17404114716",
@@ -440,3 +444,4 @@ SectionOther:AddButton({
         end
     end
 })
+end
