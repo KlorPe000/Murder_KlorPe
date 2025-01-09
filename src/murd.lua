@@ -412,7 +412,7 @@ SectionShootMurd:AddSlider({
 
 -- Переключатель для регулировки прозрачности кнопки
 SectionShootMurd:AddToggle({
-    Name = "Прозрачность кнопки",
+    Name = "Прозрачність кнопки",
     Default = true,
     Callback = function(state)
         button.BackgroundTransparency = state and 0 or 1
@@ -503,7 +503,7 @@ SectionShootMurd:AddToggle({
         end
     end
 })
-    
+
 -- Секция "Інше"
 local SectionOther = MurderTab:AddSection({ 
     Name = "Інше" 
