@@ -329,7 +329,7 @@ end)
 local SectionShootMurd = MurderTab:AddSection({ 
     Name = "Фічі для шеріфа" 
 })
-
+ 
 local player = game.Players.LocalPlayer
 local coreGui = game:GetService("CoreGui")
 
