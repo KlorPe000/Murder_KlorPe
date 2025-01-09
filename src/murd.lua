@@ -398,7 +398,7 @@ button.InputChanged:Connect(function(input)
 end)
 
 -- Слайдер для изменения размера кнопки
-ShootMurd:AddSlider({
+SectionShootMurd:AddSlider({
     Name = "Радіус кнопки",
     Min = 1,
     Max = 30,
@@ -411,7 +411,7 @@ ShootMurd:AddSlider({
 })
 
 -- Переключатель для регулировки прозрачности кнопки
-ShootMurd:AddToggle({
+SectionShootMurd:AddToggle({
     Name = "Прозрачность кнопки",
     Default = true,
     Callback = function(state)
@@ -491,7 +491,7 @@ end
 local isButtonConnected = false
 
 -- Добавление переключателя для кнопки
-ShootMurd:AddToggle({
+SectionShootMurd:AddToggle({
     Name = "Вкл кнопку Shoot Murder",
     Default = false,
     Callback = function(state)
