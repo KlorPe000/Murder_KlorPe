@@ -340,7 +340,7 @@ screenGui.Name = "ShootMurderGui"
 
 local button = Instance.new("TextButton")
 button.Parent = screenGui
-button.Text = "Постріл в мардера"
+button.Text = "Постріл"
 button.Size = UDim2.new(0, 100, 0, 100) -- Изначально размер кнопки 100x100
 button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Размещение по центру экрана
 button.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -412,7 +412,7 @@ SectionShootMurd:AddSlider({
 
 -- Переключатель для регулировки прозрачности кнопки
 SectionShootMurd:AddToggle({
-    Name = "Прозрачність кнопки",
+    Name = "Прозорість кнопки",
     Default = true,
     Callback = function(state)
         button.BackgroundTransparency = state and 0 or 1
