@@ -492,7 +492,7 @@ local isButtonConnected = false
 
 -- Добавление переключателя для кнопки
 SectionShootMurd:AddToggle({
-    Name = "Вкл кнопку Shoot Murder",
+    Name = "Вкл кнопку постріл в мардера",
     Default = false,
     Callback = function(state)
         if state then
