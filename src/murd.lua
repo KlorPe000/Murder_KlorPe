@@ -325,11 +325,6 @@ game:GetService('RunService').Heartbeat:connect(function()
     end
 end)
 
--- Секция "Фічі для шеріфа"
-local SectionShootMurd = MurderTab:AddSection({ 
-    Name = "Фічі для шеріфа" 
-})
- 
 local player = game.Players.LocalPlayer
 local coreGui = game:GetService("CoreGui")
 
@@ -468,11 +463,18 @@ local function shootMurderer()
         return
     end
 
+    -- Получаем текущую позицию мардера и его скорость
     local targetPosition = murdererHRP.Position
+    local murdererVelocity = murderer.Character.HumanoidRootPart.AssemblyLinearVelocity
 
+    -- Предсказать положение мардера через небольшое время (например, 0.2 секунд)
+    local timePrediction = 0.2
+    local predictedPosition = targetPosition + murdererVelocity * timePrediction
+
+    -- Выстрел в предсказанное положение
     local args = {
         [1] = 1,
-        [2] = targetPosition,
+        [2] = predictedPosition,
         [3] = "AH2"
     }
 
@@ -481,7 +483,7 @@ local function shootMurderer()
     end)
 
     if success then
-        print("Выстрел в текущее местоположение мардера выполнен!")
+        print("Выстрел в предсказанное положение мардера выполнен!")
     else
         warn("Ошибка при выстреле: ", err)
     end
