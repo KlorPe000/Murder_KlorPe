@@ -325,6 +325,11 @@ game:GetService('RunService').Heartbeat:connect(function()
     end
 end)
 
+-- Секция "Фічі для шеріфа"
+local SectionShootMurd = MurderTab:AddSection({ 
+    Name = "Фічі для шеріфа" 
+})
+ 
 local player = game.Players.LocalPlayer
 local coreGui = game:GetService("CoreGui")
 
@@ -505,7 +510,6 @@ SectionShootMurd:AddToggle({
         end
     end
 })
-
 -- Секция "Інше"
 local SectionOther = MurderTab:AddSection({ 
     Name = "Інше" 
