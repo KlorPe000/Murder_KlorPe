@@ -198,7 +198,7 @@ workspace.DescendantRemoving:Connect(function(part)
 end)
 
 SectionGunFunctions:AddButton({
-    Name = "Отримати Gun Drop",
+    Name = "Отримати пістолет",
     Callback = function()
         if GunDrop then
             local old = game.Players.LocalPlayer.Character:GetChildren()
@@ -215,7 +215,7 @@ SectionGunFunctions:AddButton({
         else
             local CoreGui = game:GetService("StarterGui")
             CoreGui:SetCore("SendNotification", {
-                Title = "Скріпт",
+                Title = "Скрипт",
                 Text = "Пістолет не знайдено",
                 Duration = 2.3,
             })
@@ -258,7 +258,7 @@ local function AutoGetGunActive()
 end
 
 SectionGunFunctions:AddToggle({
-    Name = "Автоматично отримати Gun Drop",
+    Name = "Автоматично отримати пістолет",
     Default = false,
     Callback = function(State)
         if State then
@@ -314,7 +314,7 @@ game:GetService('RunService').Heartbeat:connect(function()
                     TextLabel.BackgroundColor3 = Color3.new(1, 1, 0)
                     TextLabel.BackgroundTransparency = 0.5
                     TextLabel.Size = UDim2.new(1, 0, 1, 0)
-                    TextLabel.Text = "GUN LOCATE!"
+                    TextLabel.Text = "Пістолет тут!"
                     TextLabel.TextColor3 = Color3.new(1, 0, 0)
                     TextLabel.TextScaled = true
                 end
@@ -433,18 +433,18 @@ local function shootMurderer()
 
     local murderer = findMurderer()
     if not murderer or not murderer.Character then
-        warn("Мардера не найдено!")
+        warn("Мардер не знайдено!")
         return
     end
 
     local gun = player.Backpack:FindFirstChild("Gun")
     if not gun then
-        warn("Пистолет не найден в рюкзаке!")
+        warn("Пістолет не знайдено в рюкзаку!")
         return
     end
 
     if gun:FindFirstChild("Reloading") and gun.Reloading.Value == true then
-        warn("Пистолет перезаряжается! Не берём в руки.")
+        warn("Пістолет перезаряджається!")
         return
     end
 
@@ -453,18 +453,18 @@ local function shootMurderer()
     end
 
     if not player.Character:FindFirstChild("Gun") then
-        warn("Пистолет не экипирован!")
+        warn("Пістолет не екіпірований!")
         return
     end
 
     if gun and gun:FindFirstChild("CanShoot") and not gun.CanShoot.Value then
-        warn("Пистолет не готов к выстрелу!")
+        warn("Пістолет не готовий до пострілу!")
         return
     end
 
     local murdererHRP = murderer.Character:FindFirstChild("HumanoidRootPart")
     if not murdererHRP then
-        warn("Не найден HumanoidRootPart у мардера!")
+        warn("Не знайдено HumanoidRootPart у мардера!")
         return
     end
 
@@ -486,12 +486,6 @@ local function shootMurderer()
     local success, err = pcall(function()
         player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
     end)
-
-    if success then
-        print("Выстрел в предсказанное положение мардера выполнен!")
-    else
-        warn("Ошибка при выстреле: ", err)
-    end
 end
 
 -- Переменная для проверки подключения обработчика
@@ -512,7 +506,7 @@ SectionShootMurd:AddToggle({
 })
 
 local FlingSection = MurderTab:AddSection({
-    Name = "Player List"
+    Name = "Флінг"
 })
 
 -- Створюємо динамічний список гравців
@@ -526,11 +520,11 @@ local function updatePlayerList()
         playerDropdown:Refresh(players, true)
     else
         playerDropdown = FlingSection:AddDropdown({
-            Name = "Select Player",
+            Name = "Виберіть гравця",
             Options = players,
             Default = "None",
             Callback = function(selected)
-                print("Selected player:", selected)
+                print("Вибраний гравець:", selected)
             end
         })
     end
@@ -543,13 +537,13 @@ game.Players.PlayerRemoving:Connect(updatePlayerList)
 
 -- Додаємо кнопку Start Fling
 FlingSection:AddButton({
-    Name = "Start Fling",
+    Name = "Почати флінг",
     Callback = function()
         local selectedPlayer = playerDropdown and playerDropdown.Value
         if selectedPlayer and selectedPlayer ~= "None" then
             ActiveFling(selectedPlayer)
         else
-            print("Please select a player to fling.")
+            print("Будь ласка, виберіть гравця для флінга.")
         end
     end
 })
