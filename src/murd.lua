@@ -524,7 +524,6 @@ local function updatePlayerList()
             Options = players,
             Default = "None",
             Callback = function(selected)
-                print("Вибраний гравець:", selected)
             end
         })
     end
