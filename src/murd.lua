@@ -166,7 +166,7 @@ SectionTeleport:AddButton({
             end
         end
     end
-})
+})     
 
 SectionTeleport:AddButton({
     Name = "Телепорт в лобі",
