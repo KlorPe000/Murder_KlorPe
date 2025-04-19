@@ -331,8 +331,6 @@ local SectionShootMurd = MurderTab:AddSection({
 
 local player = game.Players.LocalPlayer
 local coreGui = game:GetService("CoreGui")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 
 -- Создание ScreenGui в CoreGui
 local screenGui = Instance.new("ScreenGui")
@@ -358,9 +356,10 @@ screenGui.AncestryChanged:Connect(function(_, parent)
     end
 end)
 
+-- Изначально кнопка скрыта
 button.Visible = false
 
--- Функция отображения кнопки
+-- Функция отображения/скрытия
 local function toggleButton(visible)
     button.Visible = visible
     if visible then
@@ -368,7 +367,7 @@ local function toggleButton(visible)
     end
 end
 
--- Перемещение кнопки
+-- Перетаскивание
 local dragging = false
 local dragStart, startPos
 
@@ -397,7 +396,7 @@ button.InputChanged:Connect(function(input)
     end
 end)
 
--- Слайдер размера кнопки
+-- Слайдер для размера
 SectionShootMurd:AddSlider({
     Name = "Радіус кнопки",
     Min = 1,
@@ -405,12 +404,12 @@ SectionShootMurd:AddSlider({
     Default = 10,
     Callback = function(value)
         local newSize = UDim2.new(0, value * 10, 0, value * 10)
-        local tween = TweenService:Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = newSize})
+        local tween = game:GetService("TweenService"):Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = newSize})
         tween:Play()
     end
 })
 
--- Переключатель прозрачности
+-- Прозрачность кнопки
 SectionShootMurd:AddToggle({
     Name = "Прозорість кнопки",
     Default = true,
@@ -420,12 +419,12 @@ SectionShootMurd:AddToggle({
     end
 })
 
--- Основной скрипт выстрела
+-- Выстрел
 local function shootMurderer()
     local function findMurderer()
-        for _, plr in ipairs(game.Players:GetPlayers()) do
-            if plr.Backpack:FindFirstChild("Knife") or (plr.Character and plr.Character:FindFirstChild("Knife")) then
-                return plr
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.Backpack:FindFirstChild("Knife") or (player.Character and player.Character:FindFirstChild("Knife")) then
+                return player
             end
         end
         return nil
@@ -479,40 +478,42 @@ local function shootMurderer()
         [3] = "AH2"
     }
 
-    pcall(function()
+    local success, err = pcall(function()
         player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
     end)
 end
 
--- Обработка F
+-- Флаг включения выстрела на F
 local isFKeyEnabled = false
 
 SectionShootMurd:AddToggle({
     Name = "Вкл/Выкл постріл на F",
-    Default = false,
+    Default = true,
     Callback = function(state)
         isFKeyEnabled = state
     end
 })
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and isFKeyEnabled and input.KeyCode == Enum.KeyCode.F then
+-- Кнопка "F"
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if isFKeyEnabled and input.KeyCode == Enum.KeyCode.F then
         shootMurderer()
     end
 end)
 
--- Один раз подключаем клик по кнопке
-local isClickConnected = false
+-- Обработчик клика по кнопке (один раз)
+button.MouseButton1Click:Connect(function()
+    if isFKeyEnabled then return end -- Если включён F, то игнорируем клик
+    shootMurderer()
+end)
 
+-- Переключатель на показ/скрытие кнопки
 SectionShootMurd:AddToggle({
     Name = "Вкл кнопку постріл в мардера",
     Default = false,
     Callback = function(state)
         toggleButton(state)
-        if state and not isClickConnected then
-            isClickConnected = true
-            button.MouseButton1Click:Connect(shootMurderer)
-        end
     end
 })
 
