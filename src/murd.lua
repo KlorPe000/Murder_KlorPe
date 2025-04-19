@@ -489,7 +489,7 @@ local isFKeyEnabled = false
 
 SectionShootMurd:AddToggle({
     Name = "Вкл/Выкл постріл на F",
-    Default = false,
+    Default = true,
     Callback = function(state)
         isFKeyEnabled = state
     end
