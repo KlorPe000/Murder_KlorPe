@@ -21,7 +21,6 @@ local roles
 local highlightEnabled = false -- Изначально выключено
 
 -- > Functions < --
-
 function CreateHighlight() -- Создаем Highlight только при включенном состоянии
     if not highlightEnabled then return end
     for i, v in pairs(Players:GetChildren()) do
