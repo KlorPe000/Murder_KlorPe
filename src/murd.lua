@@ -325,94 +325,182 @@ game:GetService('RunService').Heartbeat:connect(function()
     end
 end)
 
-local SectionShootMurd = Tab:AddSection({
-                Name = "Фічі для шеріфа"
-            })
+-- Секция "Фічі для шеріфа"
+local SectionShootMurd = MurderTab:AddSection({ 
+    Name = "Фічі для шеріфа" 
+})
+ 
+local player = game.Players.LocalPlayer
+local coreGui = game:GetService("CoreGui")
 
-            -- Основной скрипт выстрела
-            local function shootMurderer()
-                local function findMurderer()
-                    for _, plr in ipairs(game.Players:GetPlayers()) do
-                        if plr.Backpack:FindFirstChild("Knife") or (plr.Character and plr.Character:FindFirstChild("Knife")) then
-                            return plr
-                        end
-                    end
-                    return nil
-                end
+-- Создание ScreenGui в CoreGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = coreGui
+screenGui.Name = "ShootMurderGui"
 
-                local murderer = findMurderer()
-                if not murderer or not murderer.Character then
-                    warn("Мардер не знайдено!")
-                    return
-                end
+local button = Instance.new("TextButton")
+button.Parent = screenGui
+button.Text = "Постріл"
+button.Size = UDim2.new(0, 100, 0, 100) -- Изначально размер кнопки 100x100
+button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Размещение по центру экрана
+button.AnchorPoint = Vector2.new(0.5, 0.5)
+button.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Цвет кнопки
+button.TextColor3 = Color3.new(1, 1, 1)
+button.Font = Enum.Font.SourceSansBold
+button.TextScaled = true -- Автоматическое масштабирование текста
+button.TextSize = 20 -- Базовый размер текста
 
-                local gun = player.Backpack:FindFirstChild("Gun")
-                if not gun then
-                    warn("Пістолет не знайдено в рюкзаку!")
-                    return
-                end
+-- Блокируем удаление кнопки
+screenGui.AncestryChanged:Connect(function(_, parent)
+    if not parent then
+        screenGui.Parent = coreGui
+    end
+end)
 
-                if gun:FindFirstChild("Reloading") and gun.Reloading.Value == true then
-                    warn("Пістолет перезаряджається!")
-                    return
-                end
+-- Изначально кнопка скрыта
+button.Visible = false
 
-                if not player.Character:FindFirstChild("Gun") then
-                    player.Character.Humanoid:EquipTool(gun)
-                end
+-- Функция для отображения/скрытия кнопки
+local function toggleButton(visible)
+    button.Visible = visible
+    if visible then
+        button.Position = UDim2.new(0.5, 0, 0.5, 0)
+    end
+end
 
-                if not player.Character:FindFirstChild("Gun") then
-                    warn("Пістолет не екіпірований!")
-                    return
-                end
+-- Реализация перетаскивания кнопки
+local dragging = false
+local dragStart, startPos
 
-                if gun and gun:FindFirstChild("CanShoot") and not gun.CanShoot.Value then
-                    warn("Пістолет не готовий до пострілу!")
-                    return
-                end
-
-                local murdererHRP = murderer.Character:FindFirstChild("HumanoidRootPart")
-                if not murdererHRP then
-                    warn("Не знайдено HumanoidRootPart у мардера!")
-                    return
-                end
-
-                local targetPosition = murdererHRP.Position
-                local murdererVelocity = murderer.Character.HumanoidRootPart.AssemblyLinearVelocity
-
-                local timePrediction = 0.2
-                local predictedPosition = targetPosition + murdererVelocity * timePrediction
-
-                local args = {
-                    [1] = 1,
-                    [2] = predictedPosition,
-                    [3] = "AH2"
-                }
-
-                local success, err = pcall(function()
-                    player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
-                end)
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = button.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
             end
+        end)
+    end
+end)
 
-            local shootEnabled = false
+button.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        button.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
 
-            -- Слушаем клавишу F
-            userInputService.InputBegan:Connect(function(input, gameProcessed)
-                if not gameProcessed and shootEnabled and input.KeyCode == Enum.KeyCode.F then
-                    shootMurderer()
-                end
-            end)
+-- Слайдер для изменения размера кнопки
+SectionShootMurd:AddSlider({
+    Name = "Радіус кнопки",
+    Min = 1,
+    Max = 30,
+    Default = 10,
+    Callback = function(value)
+        local newSize = UDim2.new(0, value * 10, 0, value * 10)
+        local tween = game:GetService("TweenService"):Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = newSize})
+        tween:Play()
+    end
+})
 
-            -- Переключатель
-            SectionShootMurd:AddToggle({
-                Name = "Постріл на F",
-                Default = false,
-                Callback = function(state)
-                    shootEnabled = state
-                end
-            })
+-- Переключатель для регулировки прозрачности кнопки
+SectionShootMurd:AddToggle({
+    Name = "Прозорість кнопки",
+    Default = true,
+    Callback = function(state)
+        button.BackgroundTransparency = state and 0 or 1
+        button.TextTransparency = state and 0 or 1
+    end
+})
+
+-- Основной скрипт выстрела
+local function shootMurderer()
+    local function findMurderer()
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.Backpack:FindFirstChild("Knife") or (player.Character and player.Character:FindFirstChild("Knife")) then
+                return player
+            end
+        end
+        return nil
+    end
+
+    local murderer = findMurderer()
+    if not murderer or not murderer.Character then
+        warn("Мардер не знайдено!")
+        return
+    end
+
+    local gun = player.Backpack:FindFirstChild("Gun")
+    if not gun then
+        warn("Пістолет не знайдено в рюкзаку!")
+        return
+    end
+
+    if gun:FindFirstChild("Reloading") and gun.Reloading.Value == true then
+        warn("Пістолет перезаряджається!")
+        return
+    end
+
+    if not player.Character:FindFirstChild("Gun") then
+        player.Character.Humanoid:EquipTool(gun)
+    end
+
+    if not player.Character:FindFirstChild("Gun") then
+        warn("Пістолет не екіпірований!")
+        return
+    end
+
+    if gun and gun:FindFirstChild("CanShoot") and not gun.CanShoot.Value then
+        warn("Пістолет не готовий до пострілу!")
+        return
+    end
+
+    local murdererHRP = murderer.Character:FindFirstChild("HumanoidRootPart")
+    if not murdererHRP then
+        warn("Не знайдено HumanoidRootPart у мардера!")
+        return
+    end
+
+    -- Получаем текущую позицию мардера и его скорость
+    local targetPosition = murdererHRP.Position
+    local murdererVelocity = murderer.Character.HumanoidRootPart.AssemblyLinearVelocity
+
+    -- Предсказать положение мардера через небольшое время (например, 0.2 секунд)
+    local timePrediction = 0.2
+    local predictedPosition = targetPosition + murdererVelocity * timePrediction
+
+    -- Выстрел в предсказанное положение
+    local args = {
+        [1] = 1,
+        [2] = predictedPosition,
+        [3] = "AH2"
+    }
+
+    local success, err = pcall(function()
+        player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+    end)
+end
+
+-- Переменная для проверки подключения обработчика
+local isButtonConnected = false
+
+-- Добавление переключателя для кнопки
+SectionShootMurd:AddToggle({
+    Name = "Вкл кнопку постріл в мардера",
+    Default = false,
+    Callback = function(state)
+        if state then
+            toggleButton(true)
+            button.MouseButton1Click:Connect(shootMurderer)
         else
-            warn("Скрипт був завантажений і не може бути виконаний повторно.")
+            toggleButton(false)
         end
     end
 })
