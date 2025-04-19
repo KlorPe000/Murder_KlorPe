@@ -342,7 +342,7 @@ local button = Instance.new("TextButton")
 button.Parent = screenGui
 button.Text = "Постріл"
 button.Size = UDim2.new(0, 100, 0, 100) -- Изначально размер кнопки 100x100
-button.Position = UDim2.new(0.5, 0, 0.45, 0) -- Размещение по центру экрана
+button.Position = UDim2.new(0.5, 0, 0.5, 0) -- Размещение по центру экрана
 button.AnchorPoint = Vector2.new(0.5, 0.5)
 button.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Цвет кнопки
 button.TextColor3 = Color3.new(1, 1, 1)
@@ -364,8 +364,7 @@ button.Visible = false
 local function toggleButton(visible)
     button.Visible = visible
     if visible then
-        -- Обновляем позицию кнопки, чтобы она была точно по центру
-        button.Position = UDim2.new(0.5, -button.Size.X.Offset / 2, 0.5, -button.Size.Y.Offset / 2)
+        button.Position = UDim2.new(0.5, 0, 0.5, 0) -- Обновляем позицию при отображении
     end
 end
 
