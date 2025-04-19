@@ -491,6 +491,27 @@ end
 -- Переменная для проверки подключения обработчика
 local isButtonConnected = false
 
+-- Переключатель для включения/выключения кнопки пострела
+local isFKeyEnabled = false -- Флаг, который проверяет, включен ли выстрел на F
+
+SectionShootMurd:AddToggle({
+    Name = "Вкл/Выкл постріл на F",
+    Default = false,
+    Callback = function(state)
+        isFKeyEnabled = state
+    end
+})
+
+-- Добавление функционала клавиши "F"
+local function onKeyPress(input)
+    if isFKeyEnabled and input.KeyCode == Enum.KeyCode.F then
+        shootMurderer() -- Выстрел по нажатию клавиши F
+    end
+end
+
+-- Подключаем обработчик клавиши "F"
+game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
+
 -- Добавление переключателя для кнопки
 SectionShootMurd:AddToggle({
     Name = "Вкл кнопку постріл в мардера",
@@ -505,21 +526,11 @@ SectionShootMurd:AddToggle({
     end
 })
 
--- Добавление функционала клавиши "F"
-local function onKeyPress(input)
-    if input.KeyCode == Enum.KeyCode.F then
-        shootMurderer() -- Выстрел по нажатию клавиши F
-    end
-end
 
--- Подключаем обработчик клавиши "F"
-game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
-
-
+    
 local FlingSection = MurderTab:AddSection({
     Name = "Флінг"
 })
-
 
 -- Створюємо динамічний список гравців
 local playerDropdown
