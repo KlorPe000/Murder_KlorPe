@@ -525,7 +525,7 @@ SectionShootMurd:AddToggle({
     end
 })
 
-    
+
 local FlingSection = MurderTab:AddSection({
     Name = "Флінг"
 })
