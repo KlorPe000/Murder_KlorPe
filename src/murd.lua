@@ -340,14 +340,14 @@ screenGui.Name = "ShootMurderGui"
 local button = Instance.new("TextButton")
 button.Parent = screenGui
 button.Text = "Постріл"
-button.Size = UDim2.new(0, 100, 0, 100)
-button.Position = UDim2.new(0.5, 0, 0.48, 0)
+button.Size = UDim2.new(0, 100, 0, 100) -- Изначально размер кнопки 100x100
+button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Размещение по центру экрана
 button.AnchorPoint = Vector2.new(0.5, 0.5)
-button.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+button.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Цвет кнопки
 button.TextColor3 = Color3.new(1, 1, 1)
 button.Font = Enum.Font.SourceSansBold
-button.TextScaled = true
-button.TextSize = 20
+button.TextScaled = true -- Автоматическое масштабирование текста
+button.TextSize = 20 -- Базовый размер текста
 
 -- Блокируем удаление кнопки
 screenGui.AncestryChanged:Connect(function(_, parent)
@@ -359,15 +359,15 @@ end)
 -- Изначально кнопка скрыта
 button.Visible = false
 
--- Функция отображения/скрытия
+-- Функция для отображения/скрытия кнопки
 local function toggleButton(visible)
     button.Visible = visible
     if visible then
-        button.Position = UDim2.new(0.5, 0, 0.48, 0)
+        button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Обновляем позицию при отображении
     end
 end
 
--- Перетаскивание
+-- Реализация перетаскивания кнопки
 local dragging = false
 local dragStart, startPos
 
@@ -396,7 +396,7 @@ button.InputChanged:Connect(function(input)
     end
 end)
 
--- Слайдер для размера
+-- Слайдер для изменения размера кнопки
 SectionShootMurd:AddSlider({
     Name = "Радіус кнопки",
     Min = 1,
@@ -409,7 +409,7 @@ SectionShootMurd:AddSlider({
     end
 })
 
--- Прозрачность кнопки
+-- Переключатель для регулировки прозрачности кнопки
 SectionShootMurd:AddToggle({
     Name = "Прозорість кнопки",
     Default = true,
@@ -419,7 +419,7 @@ SectionShootMurd:AddToggle({
     end
 })
 
--- Выстрел
+-- Основной скрипт выстрела
 local function shootMurderer()
     local function findMurderer()
         for _, player in ipairs(game.Players:GetPlayers()) do
@@ -467,11 +467,15 @@ local function shootMurderer()
         return
     end
 
+    -- Получаем текущую позицию мардера и его скорость
     local targetPosition = murdererHRP.Position
-    local murdererVelocity = murdererHRP.AssemblyLinearVelocity
+    local murdererVelocity = murderer.Character.HumanoidRootPart.AssemblyLinearVelocity
+
+    -- Предсказать положение мардера через небольшое время (например, 0.2 секунд)
     local timePrediction = 0.2
     local predictedPosition = targetPosition + murdererVelocity * timePrediction
 
+    -- Выстрел в предсказанное положение
     local args = {
         [1] = 1,
         [2] = predictedPosition,
@@ -483,40 +487,43 @@ local function shootMurderer()
     end)
 end
 
--- Флаг включения выстрела на F
-local isFKeyEnabled = false
+-- Переменная для проверки подключения обработчика
+local isButtonConnected = false
+
+-- Переключатель для включения/выключения кнопки пострела
+local isFKeyEnabled = false -- Флаг, который проверяет, включен ли выстрел на F
 
 SectionShootMurd:AddToggle({
     Name = "Вкл/Выкл постріл на F",
-    Default = true,
+    Default = false,
     Callback = function(state)
         isFKeyEnabled = state
     end
 })
 
--- Кнопка "F"
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+-- Добавление функционала клавиши "F"
+local function onKeyPress(input)
     if isFKeyEnabled and input.KeyCode == Enum.KeyCode.F then
-        shootMurderer()
+        shootMurderer() -- Выстрел по нажатию клавиши F
     end
-end)
+end
 
--- Обработчик клика по кнопке (один раз)
-button.MouseButton1Click:Connect(function()
-    if isFKeyEnabled then return end -- Если включён F, то игнорируем клик
-    shootMurderer()
-end)
+-- Подключаем обработчик клавиши "F"
+game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
 
--- Переключатель на показ/скрытие кнопки
+-- Добавление переключателя для кнопки
 SectionShootMurd:AddToggle({
     Name = "Вкл кнопку постріл в мардера",
     Default = false,
     Callback = function(state)
-        toggleButton(state)
+        if state then
+            toggleButton(true)
+            button.MouseButton1Click:Connect(shootMurderer)
+        else
+            toggleButton(false)
+        end
     end
 })
-
     
 local FlingSection = MurderTab:AddSection({
     Name = "Флінг"
