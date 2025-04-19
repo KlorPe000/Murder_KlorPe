@@ -340,14 +340,14 @@ screenGui.Name = "ShootMurderGui"
 local button = Instance.new("TextButton")
 button.Parent = screenGui
 button.Text = "Постріл"
-button.Size = UDim2.new(0, 100, 0, 100) -- Изначально размер кнопки 100x100
-button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Размещение по центру экрана
+button.Size = UDim2.new(0, 100, 0, 100)
+button.Position = UDim2.new(0.5, 0, 0.48, 0)
 button.AnchorPoint = Vector2.new(0.5, 0.5)
-button.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Цвет кнопки
+button.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 button.TextColor3 = Color3.new(1, 1, 1)
 button.Font = Enum.Font.SourceSansBold
-button.TextScaled = true -- Автоматическое масштабирование текста
-button.TextSize = 20 -- Базовый размер текста
+button.TextScaled = true
+button.TextSize = 20
 
 -- Блокируем удаление кнопки
 screenGui.AncestryChanged:Connect(function(_, parent)
@@ -363,7 +363,7 @@ button.Visible = false
 local function toggleButton(visible)
     button.Visible = visible
     if visible then
-        button.Position = UDim2.new(0.5, 0, 0.48, 0) -- Обновляем позицию при отображении
+        button.Position = UDim2.new(0.5, 0, 0.48, 0)
     end
 end
 
@@ -467,15 +467,12 @@ local function shootMurderer()
         return
     end
 
-    -- Получаем текущую позицию мардера и его скорость
     local targetPosition = murdererHRP.Position
     local murdererVelocity = murderer.Character.HumanoidRootPart.AssemblyLinearVelocity
 
-    -- Предсказать положение мардера через небольшое время (например, 0.2 секунд)
     local timePrediction = 0.2
     local predictedPosition = targetPosition + murdererVelocity * timePrediction
 
-    -- Выстрел в предсказанное положение
     local args = {
         [1] = 1,
         [2] = predictedPosition,
@@ -487,11 +484,8 @@ local function shootMurderer()
     end)
 end
 
--- Переменная для проверки подключения обработчика
-local isButtonConnected = false
-
--- Переключатель для включения/выключения кнопки пострела
-local isFKeyEnabled = false -- Флаг, который проверяет, включен ли выстрел на F
+-- Флаг для выстрела на клавишу F
+local isFKeyEnabled = false
 
 SectionShootMurd:AddToggle({
     Name = "Вкл/Выкл постріл на F",
@@ -501,26 +495,34 @@ SectionShootMurd:AddToggle({
     end
 })
 
--- Добавление функционала клавиши "F"
+-- Реализация выстрела по клавише F
 local function onKeyPress(input)
     if isFKeyEnabled and input.KeyCode == Enum.KeyCode.F then
-        shootMurderer() -- Выстрел по нажатию клавиши F
+        shootMurderer()
     end
 end
 
--- Подключаем обработчик клавиши "F"
 game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
 
--- Добавление переключателя для кнопки
+-- Подключение кнопки и защита от двойного клика
+local buttonConnection
+
 SectionShootMurd:AddToggle({
     Name = "Вкл кнопку постріл в мардера",
     Default = false,
     Callback = function(state)
         if state then
             toggleButton(true)
-            button.MouseButton1Click:Connect(shootMurderer)
+            if buttonConnection then
+                buttonConnection:Disconnect()
+            end
+            buttonConnection = button.MouseButton1Click:Connect(shootMurderer)
         else
             toggleButton(false)
+            if buttonConnection then
+                buttonConnection:Disconnect()
+                buttonConnection = nil
+            end
         end
     end
 })
